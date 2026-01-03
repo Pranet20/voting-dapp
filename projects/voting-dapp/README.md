@@ -1,15 +1,8 @@
-# voting-dapp
+# Voting-dapp
 
-This project has been generated using AlgoKit. See below for default getting started instructions.
+This starter React project has been generated using AlgoKit. See below for default getting started instructions.
 
 # Setup
-
-### Pre-requisites
-
-- [Python 3.12](https://www.python.org/downloads/) or later
-- [Docker](https://www.docker.com/) (only required for LocalNet)
-
-> For interactive tour over the codebase, download [vsls-contrib.codetour](https://marketplace.visualstudio.com/items?itemName=vsls-contrib.codetour) extension for VS Code, then open the [`.codetour.json`](./.tours/getting-started-with-your-algokit-project.tour) file in code tour extension.
 
 ### Initial Setup
 
@@ -19,28 +12,23 @@ Start by cloning this repository to your local machine.
 #### 2. Install Pre-requisites
 Ensure the following pre-requisites are installed and properly configured:
 
-- **Docker**: Required for running a local Algorand network. [Install Docker](https://www.docker.com/).
+- **npm**: Node package manager. Install from [Node.js Installation Guide](https://nodejs.org/en/download/). Verify with `npm -v` to see version `18.12`+.
 - **AlgoKit CLI**: Essential for project setup and operations. Install the latest version from [AlgoKit CLI Installation Guide](https://github.com/algorandfoundation/algokit-cli#install). Verify installation with `algokit --version`, expecting `2.0.0` or later.
 
 #### 3. Bootstrap Your Local Environment
 Run the following commands within the project folder:
 
-- **Install Poetry**: Required for Python dependency management. [Installation Guide](https://python-poetry.org/docs/#installation). Verify with `poetry -V` to see version `1.2`+.
-- **Setup Project**: Execute `algokit project bootstrap all` to install dependencies and setup a Python virtual environment in `.venv`.
-- **Configure environment**: Execute `algokit generate env-file -a target_network localnet` to create a `.env.localnet` file with default configuration for `localnet`.
-- **Start LocalNet**: Use `algokit localnet start` to initiate a local Algorand network.
+- **Install Project Dependencies**: With `algokit project bootstrap all`, ensure all dependencies are ready.
 
 ### Development Workflow
 
 #### Terminal
 Directly manage and interact with your project using AlgoKit commands:
 
-1. **Build Contracts**: `algokit project run build` compiles all smart contracts. You can also specify a specific contract by passing the name of the contract folder as an extra argument.
-For example: `algokit project run build -- hello_world` will only build the `hello_world` contract.
-2. **Deploy**: Use `algokit project deploy localnet` to deploy contracts to the local network. You can also specify a specific contract by passing the name of the contract folder as an extra argument.
-For example: `algokit project deploy localnet -- hello_world` will only deploy the `hello_world` contract.
+1. **Build Contracts**: `algokit project run build` builds react web app and links with smart contracts in workspace, if any.
+2. Remaining set of command for linting, testing and deployment can be found in respective [package.json](./package.json) file and [.algokit.toml](./.algokit.toml) files.
 
-#### VS Code 
+#### VS Code
 For a seamless experience with breakpoint debugging and other features:
 
 1. **Open Project**: In VS Code, open the repository root.
@@ -49,8 +37,8 @@ For a seamless experience with breakpoint debugging and other features:
    - Use `F5` to start debugging.
    - **Windows Users**: Select the Python interpreter at `./.venv/Scripts/python.exe` via `Ctrl/Cmd + Shift + P` > `Python: Select Interpreter` before the first run.
 
-#### JetBrains IDEs
-While primarily optimized for VS Code, JetBrains IDEs are supported:
+#### Other IDEs
+While primarily optimized for VS Code, Jetbrains WebStorm has base support for this project:
 
 1. **Open Project**: In your JetBrains IDE, open the repository root.
 2. **Automatic Setup**: The IDE should configure the Python interpreter and virtual environment.
@@ -59,43 +47,30 @@ While primarily optimized for VS Code, JetBrains IDEs are supported:
 ## AlgoKit Workspaces and Project Management
 This project supports both standalone and monorepo setups through AlgoKit workspaces. Leverage [`algokit project run`](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/run.md) commands for efficient monorepo project orchestration and management across multiple projects within a workspace.
 
-## AlgoKit Generators
+> Please note, by default frontend is pre configured to run against Algorand LocalNet. If you want to run against TestNet or MainNet, comment out the current environment variable and uncomment the relevant one in [`.env`](.env) file that is created after running bootstrap command and based on [`.env.template`](.env.template).
 
-This template provides a set of [algokit generators](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/generate.md) that allow you to further modify the project instantiated from the template to fit your needs, as well as giving you a base to build your own extensions to invoke via the `algokit generate` command.
+# Algorand Wallet integrations
 
-### Generate Smart Contract 
+The template comes with [`use-wallet`](https://github.com/txnlab/use-wallet) integration, which provides a React hook for connecting to an Algorand wallet providers. The following wallet providers are included by default:
+- LocalNet:
+- - [KMD/Local Wallet](https://github.com/TxnLab/use-wallet#kmd-algorand-key-management-daemon) - Algorand's Key Management Daemon (KMD) is a service that manages Algorand private keys and signs transactions. Works best with AlgoKit LocalNet and allows you to easily test and interact with your dApps locally.
+- TestNet and others:
+- - [Pera Wallet](https://perawallet.app).
+- - [Defly Wallet](https://defly.app).
+- - [Exodus Wallet](https://www.exodus.com).
+- - [Daffi Wallet](https://www.daffi.me).
 
-By default the template creates a single `HelloWorld` contract under hello_world folder in the `smart_contracts` directory. To add a new contract:
-
-1. From the root of the project (`../`) execute `algokit generate smart-contract`. This will create a new starter smart contract and deployment configuration file under `{your_contract_name}` subfolder in the `smart_contracts` directory.
-2. Each contract potentially has different creation parameters and deployment steps. Hence, you need to define your deployment logic in `deploy_config.py`file.
-3. `config.py` file will automatically build all contracts in the `smart_contracts` directory. If you want to build specific contracts manually, modify the default code provided by the template in `config.py` file.
-
-> Please note, above is just a suggested convention tailored for the base configuration and structure of this template. The default code supplied by the template in `config.py` and `index.ts` (if using ts clients) files are tailored for the suggested convention. You are free to modify the structure and naming conventions as you see fit.
-
-### Generate '.env' files
-
-By default the template instance does not contain any env files. Using [`algokit project deploy`](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/features/project/deploy.md) against `localnet` | `testnet` | `mainnet` will use default values for `algod` and `indexer` unless overwritten via `.env` or `.env.{target_network}`. 
-
-To generate a new `.env` or `.env.{target_network}` file, run `algokit generate env-file`
-
-### Debugging Smart Contracts
-
-This project is optimized to work with AlgoKit AVM Debugger extension. To activate it:
-Refer to the commented header in the `__main__.py` file in the `smart_contracts` folder.
-
-If you have opted in to include VSCode launch configurations in your project, you can also use the `Debug TEAL via AlgoKit AVM Debugger` launch configuration to interactively select an available trace file and launch the debug session for your smart contract.
-
-For information on using and setting up the `AlgoKit AVM Debugger` VSCode extension refer [here](https://github.com/algorandfoundation/algokit-avm-vscode-debugger). To install the extension from the VSCode Marketplace, use the following link: [AlgoKit AVM Debugger extension](https://marketplace.visualstudio.com/items?itemName=algorandfoundation.algokit-avm-vscode-debugger).
+Refer to official [`use-wallet`](https://github.com/txnlab/use-wallet) documentation for detailed guidelines on how to integrate with other wallet providers (such as WalletConnect v2). Too see implementation details on the use wallet hook and initialization of extra wallet providers refer to [`App.tsx`](./src/App.tsx).
 
 # Tools
 
-This project makes use of Algorand Python to build Algorand smart contracts. The following tools are in use:
+This project makes use of React and Tailwind to provider a base project configuration to develop frontends for your Algorand dApps and interactions with smart contracts. The following tools are in use:
 
-- [Algorand](https://www.algorand.com/) - Layer 1 Blockchain; [Developer portal](https://dev.algorand.co/), [Why Algorand?](https://dev.algorand.co/getting-started/why-algorand/)
-- [AlgoKit](https://github.com/algorandfoundation/algokit-cli) - One-stop shop tool for developers building on the Algorand network; [docs](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/algokit.md), [intro tutorial](https://github.com/algorandfoundation/algokit-cli/blob/main/docs/tutorials/intro.md)
-- [Algorand Python](https://github.com/algorandfoundation/puya) - A semantically and syntactically compatible, typed Python language that works with standard Python tooling and allows you to express smart contracts (apps) and smart signatures (logic signatures) for deployment on the Algorand Virtual Machine (AVM); [docs](https://github.com/algorandfoundation/puya), [examples](https://github.com/algorandfoundation/puya/tree/main/examples)
-- [AlgoKit Utils](https://github.com/algorandfoundation/algokit-utils-py) - A set of core Algorand utilities that make it easier to build solutions on Algorand.
-- [Poetry](https://python-poetry.org/): Python packaging and dependency management.
+- [AlgoKit Utils](https://github.com/algorandfoundation/algokit-utils-ts) - Various TypeScript utilities to simplify interactions with Algorand and AlgoKit.
+- [React](https://reactjs.org/) - A JavaScript library for building user interfaces.
+- [use-wallet](https://github.com/txnlab/use-wallet) - A React hook for connecting to an Algorand wallet providers.
+- [npm](https://www.npmjs.com/): Node.js package manager
 It has also been configured to have a productive dev experience out of the box in [VS Code](https://code.visualstudio.com/), see the [.vscode](./.vscode) folder.
+# Integrating with smart contracts and application clients
 
+Refer to the detailed guidance on [integrating with smart contracts and application clients](./src/contracts/README.md). In essence, for any smart contract codebase generated with AlgoKit or other tools that produce compile contracts into ARC34 compliant app specifications, you can use the `algokit generate` command to generate TypeScript or Python typed client. Once generated simply drag and drop the generated client into `./src/contracts` and import it into your React components as you see fit.

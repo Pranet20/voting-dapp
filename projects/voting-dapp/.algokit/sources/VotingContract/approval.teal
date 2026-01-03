@@ -1,0 +1,107 @@
+#pragma version 11
+#pragma typetrack false
+
+
+main:
+    intcblock 0 1
+    bytecblock "option_a" "option_b"
+    txn ApplicationID
+    bnz main_after_if_else@2
+
+
+    bytec_0
+    intc_0
+    app_global_put
+
+
+    bytec_1
+    intc_0
+    app_global_put
+
+main_after_if_else@2:
+
+
+    txn NumAppArgs
+    bz main___algopy_default_create@12
+    txn OnCompletion
+    !
+    assert
+    txn ApplicationID
+    assert
+    pushbytess 0xe57eaeaf 0x66c5c741 0xa4360bc0
+    txna ApplicationArgs 0
+    match vote_a vote_b get_results
+    err
+
+main___algopy_default_create@12:
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    return
+
+
+
+vote_a:
+
+
+    intc_0
+    bytec_0
+    app_global_get_ex
+    assert
+    intc_1
+    +
+    bytec_0
+    swap
+    app_global_put
+
+
+    intc_1
+    return
+
+
+
+vote_b:
+
+
+    intc_0
+    bytec_1
+    app_global_get_ex
+    assert
+    intc_1
+    +
+    bytec_1
+    swap
+    app_global_put
+
+
+    intc_1
+    return
+
+
+
+get_results:
+
+
+    intc_0
+    bytec_0
+    app_global_get_ex
+    assert
+    intc_0
+    bytec_1
+    app_global_get_ex
+    assert
+
+
+    swap
+    itob
+    swap
+    itob
+    concat
+    pushbytes 0x151f7c75
+    swap
+    concat
+    log
+    intc_1
+    return

@@ -5,40 +5,46 @@ import algokit_utils
 logger = logging.getLogger(__name__)
 
 
-# define deployment behaviour based on supplied app spec
 def deploy() -> None:
-    from smart_contracts.artifacts.hello_world.hello_world_client import (
-        HelloArgs,
-        HelloWorldFactory,
+    # ✅ Correct import: matches generated client
+    from smart_contracts.artifacts.hello_world.voting_contract_client import (
+        VotingContractClient,
+        VotingContractFactory,
     )
 
+    # Create Algorand client from environment (.env)
     algorand = algokit_utils.AlgorandClient.from_environment()
-    deployer_ = algorand.account.from_environment("DEPLOYER")
 
+    # Load deployer account from DEPLOYER_MNEMONIC
+    deployer = algorand.account.from_environment("DEPLOYER")
+
+    # Create typed factory
     factory = algorand.client.get_typed_app_factory(
-        HelloWorldFactory, default_sender=deployer_.address
+        VotingContractFactory,
+        default_sender=deployer.address,
     )
 
+    # Deploy the smart contract
     app_client, result = factory.deploy(
         on_update=algokit_utils.OnUpdate.AppendApp,
         on_schema_break=algokit_utils.OnSchemaBreak.AppendApp,
     )
 
-    if result.operation_performed in [
+    # Fund the app account if created or replaced
+    if result.operation_performed in (
         algokit_utils.OperationPerformed.Create,
         algokit_utils.OperationPerformed.Replace,
-    ]:
+    ):
         algorand.send.payment(
             algokit_utils.PaymentParams(
-                amount=algokit_utils.AlgoAmount(algo=1),
-                sender=deployer_.address,
+                sender=deployer.address,
                 receiver=app_client.app_address,
+                amount=algokit_utils.AlgoAmount(algo=1),
             )
         )
 
-    name = "world"
-    response = app_client.send.hello(args=HelloArgs(name=name))
     logger.info(
-        f"Called hello on {app_client.app_name} ({app_client.app_id}) "
-        f"with name={name}, received: {response.abi_return}"
+        f"✅ VotingContract deployed successfully | "
+        f"App ID: {app_client.app_id} | "
+        f"App Address: {app_client.app_address}"
     )

@@ -1,8 +1,23 @@
-from algopy import ARC4Contract, String
-from algopy.arc4 import abimethod
+from algopy import ARC4Contract, UInt64, arc4
 
 
-class HelloWorld(ARC4Contract):
-    @abimethod()
-    def hello(self, name: String) -> String:
-        return "Hello, " + name
+class VotingContract(ARC4Contract):
+    """
+    Simple Voting Smart Contract
+    """
+
+    def __init__(self) -> None:
+        self.option_a = UInt64(0)
+        self.option_b = UInt64(0)
+
+    @arc4.abimethod()
+    def vote_a(self) -> None:
+        self.option_a += UInt64(1)
+
+    @arc4.abimethod()
+    def vote_b(self) -> None:
+        self.option_b += UInt64(1)
+
+    @arc4.abimethod(readonly=True)
+    def get_results(self) -> tuple[UInt64, UInt64]:
+        return self.option_a, self.option_b
