@@ -35,12 +35,11 @@
     "react-dom": "^18.2.0",
     "tslib": "^2.6.2"
   },
-  "scripts": {
-    "generate:app-clients": "algokit project link --all",
-    "dev": "npm run generate:app-clients && vite",
-    "build": "npm run generate:app-clients && tsc && vite build",
-    "preview": "vite preview"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "tsc && vite build",
+  "preview": "vite preview"
+},
   "eslintConfig": {
     "extends": [
       "react-app"
